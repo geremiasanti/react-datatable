@@ -88,7 +88,7 @@ function ProductTable({products, filterText, inStockOnly}) {
 			<thead>
 				<tr>
 					<th>Product</th>
-					<th>Price</th>
+					<th >Price</th>
 				</tr>
 			</thead>
 			<tbody>{rows}</tbody>
@@ -116,7 +116,7 @@ function ProductRow({product}) {
 			<td>
 				{nameFormatted}
 			</td>
-			<td>
+			<td style={{ textAlign: 'center' }}>
 				{product.price}
 			</td>
 		</tr>
