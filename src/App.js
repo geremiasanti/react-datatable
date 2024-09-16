@@ -66,7 +66,7 @@ function ProductTable({products, filterText, inStockOnly}) {
 	]
 	const [orderColumns, setOrderColumns] = useState([{
 		prop: showColumns[0].prop,
-		order: 'asc',
+		asc: true,
 	}]);
 
 	const rows = products.filter((product) => {
@@ -126,7 +126,8 @@ function ProductHeader({showColumns, orderColumns}) {
 			const orderColumn = orderColumns.find(samePropValue)
 			const orderColumnPriority = orderColumns.findIndex(samePropValue) 
 			if(orderColumn)
-				displayOrder = `${orderColumnPriority} (${orderColumn.order})`;
+				displayOrder = 
+					`${orderColumnPriority} (${orderColumn.asc ? 'asc' : 'desc'})`;
 
 			return (
 				<th key={col.prop}>
