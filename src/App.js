@@ -76,28 +76,19 @@ function ProductTable({products, filterText, inStockOnly}) {
 		const existingOrderColumn= orderColumns.find(samePropValue)
 		const orderColumnPriority = orderColumns.findIndex(samePropValue) 
 
-		// if new to order cols, unshift it
 		if(!existingOrderColumn) {
-			nextOrderColumns.unshift({
+			nextOrderColumns.push({
 				prop: prop,
 				asc: true,
 			})
 			setOrderColumns(nextOrderColumns);	
 			return;
-		} 
-
-		// if max priority, invert ordering
-		if(orderColumnPriority === 0) {
+		} else {
 			existingOrderColumn.asc = !existingOrderColumn.asc;	
-			nextOrderColumns[0] = existingOrderColumn;
+			nextOrderColumns[orderColumnPriority] = existingOrderColumn;
 			setOrderColumns(nextOrderColumns);
 			return;
 		}
-
-		// if not max priority, make it max priority
-		nextOrderColumns.splice(orderColumnPriority, 1);
-		nextOrderColumns.unshift(existingOrderColumn);
-		setOrderColumns(nextOrderColumns);
 	}
 
 	const filteredOrderedProducts = products.filter((product) => {
