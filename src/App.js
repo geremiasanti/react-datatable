@@ -110,11 +110,15 @@ function ProductTable({products, filterText, inStockOnly}) {
 		}
 
 		return true;
-	}).sort((p0, p1) => 
-		orderColumns[0].asc 
-			? p0[orderColumns[0].prop].localeCompare(p1[orderColumns[0].prop])
-			: p1[orderColumns[0].prop].localeCompare(p0[orderColumns[0].prop])
-	)
+	}).sort((p0, p1) => { 
+		let acc = 0;
+		orderColumns.forEach((ord) => {
+			acc ||= ord.asc 
+				? p0[ord.prop].localeCompare(p1[ord.prop])
+				: p1[ord.prop].localeCompare(p0[ord.prop])
+		})
+		return acc
+	});
 
 	const rows = filteredOrderedProducts.map((product) => {
 		return (
