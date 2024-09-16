@@ -64,7 +64,10 @@ function ProductTable({products, filterText, inStockOnly}) {
 			display: 'Price'
 		}
 	]
-	const [orderColumns, setOrderColumns] = useState([showColumns[0].prop]);
+	const [orderColumns, setOrderColumns] = useState([{
+		prop: showColumns[0].prop,
+		order: 'asc',
+	}]);
 
 	const rows = products.filter((product) => {
 		if(product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
@@ -102,7 +105,10 @@ function ProductTable({products, filterText, inStockOnly}) {
 	return (
 		<table>
 			<thead>
-				<ProductHeader showColumns={showColumns}/>
+				<ProductHeader 
+					showColumns={showColumns}
+					orderColumns={orderColumns}
+				/>
 			</thead>
 			<tbody>
 				{rows}
@@ -111,9 +117,23 @@ function ProductTable({products, filterText, inStockOnly}) {
 	);
 }
 
-function ProductHeader({showColumns}) {
+function ProductHeader({showColumns, orderColumns}) {
 	const columnHeaders = showColumns.map(
-		(col) => <th key={col.prop}>{col.display}</th>
+		(col) => {
+			let displayOrder = "";	
+			
+			const samePropValue = (obj) => obj.prop === col.prop;
+			const orderColumn = orderColumns.find(samePropValue)
+			const orderColumnPriority = orderColumns.findIndex(samePropValue) 
+			if(orderColumn)
+				displayOrder = `${orderColumnPriority} (${orderColumn.order})`;
+
+			return (
+				<th key={col.prop}>
+					{col.display} <span style={{ fontWeight: 'normal' }}>{displayOrder}</span>
+				</th>
+			)
+		}
 	);
 	return (
 		<tr>
