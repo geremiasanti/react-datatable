@@ -50,6 +50,22 @@ function SearchBar({
 }
 
 function ProductTable({products, filterText, inStockOnly}) {
+	const showColumns = [
+		{
+			prop: 'category',
+			display: 'Category'
+		},
+		{
+			prop: 'name',
+			display: 'Product'
+		},
+		{
+			prop: 'price',
+			display: 'Price'
+		}
+	]
+	const [orderColumns, setOrderColumns] = useState([showColumns[0].prop]);
+
 	const rows = products.filter((product) => {
 		if(product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
 			return false;
@@ -75,6 +91,7 @@ function ProductTable({products, filterText, inStockOnly}) {
 
 		return (
 			<ProductRow 
+				showColumns={showColumns}
 				product={product}
 				key={product.name}
 			/>
@@ -85,7 +102,7 @@ function ProductTable({products, filterText, inStockOnly}) {
 	return (
 		<table>
 			<thead>
-				<ProductHeader />
+				<ProductHeader showColumns={showColumns}/>
 			</thead>
 			<tbody>
 				{rows}
@@ -94,12 +111,13 @@ function ProductTable({products, filterText, inStockOnly}) {
 	);
 }
 
-function ProductHeader() {
+function ProductHeader({showColumns}) {
+	const columnHeaders = showColumns.map(
+		(col) => <th key={col.prop}>{col.display}</th>
+	);
 	return (
 		<tr>
-			<th>Category</th>
-			<th>Product</th>
-			<th>Price</th>
+			{columnHeaders}
 		</tr>
 	);
 }
@@ -127,10 +145,10 @@ function ProductRow({product}) {
 const PRODUCTS = [
 	{category: "Fruits", price: "$1", stocked: true, name: "Apple"},
 	{category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit"},
-	{category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"},
 	{category: "Vegetables", price: "$2", stocked: true, name: "Spinach"},
 	{category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin"},
-	{category: "Vegetables", price: "$1", stocked: true, name: "Peas"}
+	{category: "Vegetables", price: "$1", stocked: true, name: "Peas"},
+	{category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"}
 ];
 
 export default function App() {
