@@ -69,12 +69,18 @@ function ProductTable({products, filterText, inStockOnly}) {
 		asc: true,
 	}]);
 	
-	function handleOrdering(prop) {
+	function handleOrdering(prop, remove = false) {
 		const nextOrderColumns = orderColumns.slice();
 
 		const samePropValue = (ord) => ord.prop === prop;
 		const existingOrderColumn= orderColumns.find(samePropValue)
 		const orderColumnPriority = orderColumns.findIndex(samePropValue) 
+
+		if(remove) {
+			nextOrderColumns.splice(orderColumnPriority, 1);
+			setOrderColumns(nextOrderColumns);
+			return;
+		}
 
 		if(!existingOrderColumn) {
 			nextOrderColumns.push({
@@ -82,12 +88,10 @@ function ProductTable({products, filterText, inStockOnly}) {
 				asc: true,
 			})
 			setOrderColumns(nextOrderColumns);	
-			return;
 		} else {
 			existingOrderColumn.asc = !existingOrderColumn.asc;	
 			nextOrderColumns[orderColumnPriority] = existingOrderColumn;
 			setOrderColumns(nextOrderColumns);
-			return;
 		}
 	}
 
@@ -141,22 +145,40 @@ function ProductHeader({showColumns, orderColumns, onColumnHeaderClick}) {
 	const columnHeaders = showColumns.map(
 		(col) => {
 			let displayOrder = "";	
+			let removeOrder = "";	
 			
 			const samePropValue = (ord) => ord.prop === col.prop;
 			const orderColumn = orderColumns.find(samePropValue)
 			const orderColumnPriority = orderColumns.findIndex(samePropValue) 
-			if(orderColumn)
+			if(orderColumn) {
 				displayOrder = 
 					`(${orderColumnPriority} ${orderColumn.asc ? 'asc' : 'desc'})`;
+				removeOrder = 'X'
+			}
+				
 
 			return (
-				<th 
-					key={col.prop}
-					onClick={() => onColumnHeaderClick(col.prop)}
-				>
-					{col.display}
+				<th key={col.prop}>
+					<span 
+						style={{ cursor: 'pointer' }}
+						onClick={() => onColumnHeaderClick(col.prop)}
+					>
+						{col.display}
+					</span>
 					&nbsp;
-					<span style={{ fontWeight: 'normal' }}>{displayOrder}</span>
+					<span 
+						style={{ fontWeight: 'normal', cursor: 'pointer' }}
+						onClick={() => onColumnHeaderClick(col.prop)}
+					>
+						{displayOrder}
+					</span>
+					&nbsp;
+					<span 
+						style={{ fontWeight: 'normal', cursor: 'pointer' }}
+						onClick={() => onColumnHeaderClick(col.prop, true)}
+					>
+						{removeOrder}
+					</span>
 				</th>
 			)
 		}
