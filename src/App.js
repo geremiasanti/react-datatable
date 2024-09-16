@@ -100,7 +100,7 @@ function ProductTable({products, filterText, inStockOnly}) {
 		setOrderColumns(nextOrderColumns);
 	}
 
-	const rows = products.filter((product) => {
+	const filteredOrderedProducts = products.filter((product) => {
 		if(product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
 			return false;
 		}
@@ -110,7 +110,13 @@ function ProductTable({products, filterText, inStockOnly}) {
 		}
 
 		return true;
-	}).map((product) => {
+	}).sort((p0, p1) => 
+		orderColumns[0].asc 
+			? p0[orderColumns[0].prop].localeCompare(p1[orderColumns[0].prop])
+			: p1[orderColumns[0].prop].localeCompare(p0[orderColumns[0].prop])
+	)
+
+	const rows = filteredOrderedProducts.map((product) => {
 		return (
 			<ProductRow 
 				key={product.name}
@@ -119,7 +125,6 @@ function ProductTable({products, filterText, inStockOnly}) {
 			/>
 		);
 	});
-
 
 	return (
 		<table>
