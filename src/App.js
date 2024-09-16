@@ -80,18 +80,6 @@ function ProductTable({products, filterText, inStockOnly}) {
 
 		return true;
 	}).map((product) => {
-		if( 
-			product.name.toLowerCase().indexOf(
-				filterText.toLowerCase()
-			) === -1
-		) {
-			return;
-		}
-
-		if(inStockOnly && !product.stocked) {
-			return;
-		}
-
 		return (
 			<ProductRow 
 				showColumns={showColumns}
