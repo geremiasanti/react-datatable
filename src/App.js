@@ -50,10 +50,17 @@ function SearchBar({
 }
 
 function ProductTable({products, filterText, inStockOnly}) {
-	const rows = [];
-	let lastCategory = null;
+	const rows = products.filter((product) => {
+		if(product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
+			return false;
+		}
 
-	products.forEach((product) => {
+		if(inStockOnly && !product.stocked) {
+			return false;
+		}
+
+		return true;
+	}).map((product) => {
 		if( 
 			product.name.toLowerCase().indexOf(
 				filterText.toLowerCase()
@@ -66,44 +73,35 @@ function ProductTable({products, filterText, inStockOnly}) {
 			return;
 		}
 
-		if(product.category !== lastCategory) {
-			rows.push(
-				<ProductCategoryRow 
-					category={product.category} 
-					key={product.category}
-				/>
-			);
-			lastCategory = product.category;
-		}
-		rows.push(
+		return (
 			<ProductRow 
 				product={product}
 				key={product.name}
 			/>
 		);
-	})
+	});
+
 
 	return (
 		<table>
 			<thead>
-				<tr>
-					<th>Product</th>
-					<th >Price</th>
-				</tr>
+				<ProductHeader />
 			</thead>
-			<tbody>{rows}</tbody>
+			<tbody>
+				{rows}
+			</tbody>
 		</table>
 	);
 }
 
-function ProductCategoryRow({category}) {
+function ProductHeader() {
 	return (
 		<tr>
-			<th colSpan="2">
-				{category}
-			</th>
+			<th>Category</th>
+			<th>Product</th>
+			<th>Price</th>
 		</tr>
-	)
+	);
 }
 
 function ProductRow({product}) {
@@ -113,6 +111,9 @@ function ProductRow({product}) {
 
 	return (
 		<tr>
+			<td>
+				{product.category}
+			</td>
 			<td>
 				{nameFormatted}
 			</td>
