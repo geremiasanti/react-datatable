@@ -68,6 +68,37 @@ function ProductTable({products, filterText, inStockOnly}) {
 		prop: showColumns[0].prop,
 		asc: true,
 	}]);
+	
+	function handleOrdering(prop) {
+		const nextOrderColumns = orderColumns.slice();
+
+		const samePropValue = (ord) => ord.prop === prop;
+		const existingOrderColumn= orderColumns.find(samePropValue)
+		const orderColumnPriority = orderColumns.findIndex(samePropValue) 
+
+		// if new to order cols, unshift it
+		if(!existingOrderColumn) {
+			nextOrderColumns.unshift({
+				prop: prop,
+				asc: true,
+			})
+			setOrderColumns(nextOrderColumns);	
+			return;
+		} 
+
+		// if max priority, invert ordering
+		if(orderColumnPriority === 0) {
+			existingOrderColumn.asc = !existingOrderColumn.asc;	
+			nextOrderColumns[0] = existingOrderColumn;
+			setOrderColumns(nextOrderColumns);
+			return;
+		}
+
+		// if not max priority, make it max priority
+		nextOrderColumns.splice(orderColumnPriority, 1);
+		nextOrderColumns.unshift(existingOrderColumn);
+		setOrderColumns(nextOrderColumns);
+	}
 
 	const rows = products.filter((product) => {
 		if(product.name.toLowerCase().indexOf(filterText.toLowerCase()) === -1) {
@@ -82,9 +113,9 @@ function ProductTable({products, filterText, inStockOnly}) {
 	}).map((product) => {
 		return (
 			<ProductRow 
+				key={product.name}
 				showColumns={showColumns}
 				product={product}
-				key={product.name}
 			/>
 		);
 	});
@@ -96,6 +127,7 @@ function ProductTable({products, filterText, inStockOnly}) {
 				<ProductHeader 
 					showColumns={showColumns}
 					orderColumns={orderColumns}
+					onColumnHeaderClick={handleOrdering}
 				/>
 			</thead>
 			<tbody>
@@ -105,21 +137,26 @@ function ProductTable({products, filterText, inStockOnly}) {
 	);
 }
 
-function ProductHeader({showColumns, orderColumns}) {
+function ProductHeader({showColumns, orderColumns, onColumnHeaderClick}) {
 	const columnHeaders = showColumns.map(
 		(col) => {
 			let displayOrder = "";	
 			
-			const samePropValue = (obj) => obj.prop === col.prop;
+			const samePropValue = (ord) => ord.prop === col.prop;
 			const orderColumn = orderColumns.find(samePropValue)
 			const orderColumnPriority = orderColumns.findIndex(samePropValue) 
 			if(orderColumn)
 				displayOrder = 
-					`${orderColumnPriority} (${orderColumn.asc ? 'asc' : 'desc'})`;
+					`(${orderColumnPriority} ${orderColumn.asc ? 'asc' : 'desc'})`;
 
 			return (
-				<th key={col.prop}>
-					{col.display} <span style={{ fontWeight: 'normal' }}>{displayOrder}</span>
+				<th 
+					key={col.prop}
+					onClick={() => onColumnHeaderClick(col.prop)}
+				>
+					{col.display}
+					&nbsp;
+					<span style={{ fontWeight: 'normal' }}>{displayOrder}</span>
 				</th>
 			)
 		}
@@ -156,8 +193,8 @@ const PRODUCTS = [
 	{category: "Fruits", price: "$1", stocked: true, name: "Dragonfruit"},
 	{category: "Vegetables", price: "$2", stocked: true, name: "Spinach"},
 	{category: "Vegetables", price: "$4", stocked: false, name: "Pumpkin"},
+	{category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"},
 	{category: "Vegetables", price: "$1", stocked: true, name: "Peas"},
-	{category: "Fruits", price: "$2", stocked: false, name: "Passionfruit"}
 ];
 
 export default function App() {
